@@ -1,0 +1,39 @@
+name: train-my-model
+
+on: [push]
+
+jobs:
+  run:
+    runs-on: [ubuntu-latest]
+  
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: iterative/setup-cml@v1
+
+      - uses: iterative/setup-dvc@v1
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: cml
+        env:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          GDRIVE_CREDENTIALS_DATA: '{"access_token": "ya29.a0ARrdaM8XGm_XrMx9W0KoGGPipcMReznq3D9ML6XUhA0mkLLqSIlZg31yNbXluGxyqAbF4aCu20JSdCntKNIHBf6_H7V1fHSmBjsijuvHlJbg8kMHjGDxnQ6lwXBbUxPmeHrJxiJ90sftKJ-c6ZNmZsecW6U1", "client_id": "710796635688-iivsgbgsb6uv1fap6635dhvuei09o66c.apps.googleusercontent.com", "client_secret": "a1Fz59uTpVNeG_VGuSKDLJXv", "refresh_token": "1//09oZgfaS2zcTiCgYIARAAGAkSNwF-L9IrtenxTMx_1135kYX0iYDzCz_JsUYO8_ChmXe_AGFwF72ZWGN2jETaCdW8jSK0VnvKGiQ", "token_expiry": "2021-08-27T11:03:08Z", "token_uri": "https://oauth2.googleapis.com/token", "user_agent": null, "revoke_uri": "https://oauth2.googleapis.com/revoke", "id_token": null, "id_token_jwt": null, "token_response": {"access_token": "ya29.a0ARrdaM8XGm_XrMx9W0KoGGPipcMReznq3D9ML6XUhA0mkLLqSIlZg31yNbXluGxyqAbF4aCu20JSdCntKNIHBf6_H7V1fHSmBjsijuvHlJbg8kMHjGDxnQ6lwXBbUxPmeHrJxiJ90sftKJ-c6ZNmZsecW6U1", "expires_in": 3599, "refresh_token": "1//09oZgfaS2zcTiCgYIARAAGAkSNwF-L9IrtenxTMx_1135kYX0iYDzCz_JsUYO8_ChmXe_AGFwF72ZWGN2jETaCdW8jSK0VnvKGiQ", "scope": "https://www.googleapis.com/auth/drive https://www.googleapis.com/auth/drive.appdata", "token_type": "Bearer"}, "scopes": ["https://www.googleapis.com/auth/drive", "https://www.googleapis.com/auth/drive.appdata"], "token_info_uri": "https://oauth2.googleapis.com/tokeninfo", "invalid": false, "_class": "OAuth2Credentials", "_module": "oauth2client.client"}'
+        run: |
+          pip install -r requirements.txt
+          
+          # Pull dataset with DVC 
+          dvc pull data
+          
+          # Reproduce pipeline if any changes detected in dependencies
+          dvc repro 
+          
+          # Use DVC metrics diff to compare metrics to master
+          git fetch --prune --unshallow
+          dvc metrics diff --show-md master >> report.md
+          
+          # Add figure to report
+          plot.png >> report.md
+          cml-send-comment report.md 

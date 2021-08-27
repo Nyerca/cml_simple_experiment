@@ -3,7 +3,7 @@ stages:
   mystage:
     cmd: python train.py
     deps:
-    - data
+    - data.csv
     - train.py
     metrics:
     - metrics.json:

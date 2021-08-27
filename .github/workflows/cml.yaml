@@ -35,5 +35,5 @@ jobs:
           dvc metrics diff --show-md master >> report.md
           
           # Add figure to report
-          # echo ![Plot image](./plot.png) >> report.md
+          echo \![Plot image]\(./plot.png\) >> report.md
           cml-send-comment report.md 

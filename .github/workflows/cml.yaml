@@ -35,6 +35,13 @@ jobs:
           dvc metrics diff --show-md master >> report.md
           
           # Add figure to report
-          dir >> report.md
-          echo \![Plot image]\(./plot.png\) >> report.md
+          #echo \![Plot image]\(./plot.png\) >> report.md
+          # git rev-parse --abbrev-ref HEAD
+          # https://github.com/Nyerca/cml_simple_experiment/blob/[branch]/plot.png?raw=true     
+          
+          export branchImg=`git rev-parse --abbrev-ref HEAD`
+          export url=https://github.com/Nyerca/cml_simple_experiment/blob/$branchImg/plot.png?raw=true
+          echo $url >> report.md
+          
+          git ls-remote --get-url
           cml-send-comment report.md 

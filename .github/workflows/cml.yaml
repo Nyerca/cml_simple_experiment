@@ -41,7 +41,7 @@ jobs:
           
           export branchImg=`git rev-parse --abbrev-ref HEAD`
           export url=https://github.com/Nyerca/cml_simple_experiment/blob/$branchImg/plot.png?raw=true
-          echo $url >> report.md
+          echo \![Plot image]\($url\) >> report.md
           
           git ls-remote --get-url
           cml-send-comment report.md 
